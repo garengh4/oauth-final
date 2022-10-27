@@ -18,27 +18,31 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class ProductController {
+public class ProductController implements ProductSwagger {
     @Autowired
     private ProductService productService;
 
+    @Override
     @GetMapping("/products")
     public List<ProductEntity> getProductList(@RequestParam String consumerKey) {
         log.info("Consumer: {}", consumerKey);
         return productService.findAll();
     }
 
+    @Override
     @GetMapping("/products/{productId}")
     public ProductEntity getProduct(@PathVariable(value = "productId") Long productId) {
         return productService.findById(productId).orElseThrow(() -> new ResourceNotFoundException("productId " + productId + " not found"));
     }
 
+    @Override
     @PostMapping("/products")
     public String createProduct(@RequestBody ProductEntity product) {
         productService.save(product);
         return "Product added";
     }
 
+    @Override
     @PutMapping("/products/{productId}")
     public String updateProduct(@PathVariable(value = "productId") Long productId, @RequestBody ProductEntity product) {
         return productService.findById(productId).map(p -> {
@@ -49,6 +53,7 @@ public class ProductController {
         }).orElseThrow(() -> new ResourceNotFoundException("productId " + productId + " not found"));
     }
 
+    @Override
     @DeleteMapping("/products/{productId}")
     public String deleteProduct(@PathVariable(value = "productId") Long productId) {
         return productService.findById(productId).map(p -> {
